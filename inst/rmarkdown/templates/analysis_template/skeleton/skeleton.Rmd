@@ -1,0 +1,399 @@
+---
+Title: " "
+Author: "Author Name"
+date: "Report Generated on `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 3
+toccolor: '#39ABD1'
+editor_options: 
+  chunk_output_type: console
+---
+
+<!-- PLEASE DO NOT EDIT ANYTHING UNTIL LINE 150 -->
+
+
+
+<!-- Add font and image preloads -->
+<!-- <link rel="preload" href="styles/Nolan Next Medium.otf" as="font" type="font/woff2" crossorigin> -->
+<style type="text/css">
+body{
+  font-size: 12pt;
+  background-image: url("https://images.unsplash.com/photo-1585314062604-1a357de8b000?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80");
+  background-color:  #ffffff;
+  background-repeat: repeat-x;
+  background-size: 1000px 200px;
+  font-family: NolanNext, Helvetica, sans-serif;
+}
+
+#TOC {
+  margin-top: 220px;
+  background: url("https://h1bdata.com/wp-content/uploads/2020/07/tempus-labs-1595501234lpc48.png");
+  /* background-size: contain; */
+  background-size: 90%;
+  padding-top: 60px !important;
+  background-repeat: no-repeat;
+  background-position: 10px 2px;
+  width: 450px;
+}
+
+#header {
+color: #fffff;
+height: 200px;
+padding-top: 25px;
+}
+
+#header h1 {
+font-size: 10px;
+text-transform: uppercase;
+}
+
+#header h4.date {
+display: none;
+}
+
+#miniheader {
+  position: absolute;
+  top: 60px;
+  color: #ffffff;
+}
+
+#miniheader #mh-company {
+  font-size: 50px;
+}
+
+#miniheader #mh-objective {
+font-size: 20px;
+font-style: italic;
+}
+
+<!-- /* Change color of TOC */ -->
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    color: #ffffff;
+    background-color: #39ABD1;
+    border-color: #000000;
+}
+
+<!-- /* Change color of references to TOC */ -->
+a {
+    color: #39ABD1;
+    text-decoration: none;
+}
+
+<!-- /* Format pills for tabs */ -->
+.nav>li>a {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    color: #39ABD1;
+}
+.nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus {
+    color: #ffffff;
+    background-color: #39ABD1;
+    border-color: #000000;
+    border: 2px solid black;
+}
+.nav-pills>li>a {
+  background-color: #ffffff;
+  border-color: #000000;
+  color: #000000;
+}
+
+h1.title {
+  font-size: 32px;
+}
+h1 { /* Header 1 */
+  font-size: 26px;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+    margin-top: 20px;
+    border-bottom: solid 2px #3E3E3F;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+}
+
+.spacer { height:4em;
+}
+
+</style>
+  
+<script>
+// Wait until everything on the page has been dynamically loaded by JavaScript
+// This is the syntax as of JQuery 1.8+
+$(window).on('load', function() {
+  // Find and mute rendering of empty TOC list items
+  var objs = $("#TOC").find(".tocify-header li");
+  for(let i = 0; i < objs.length; i++) {
+    if($(objs[i]).html() == "") {
+      $(objs[i]).css("display", "none");
+    }
+  }
+});
+</script>
+
+
+```{r setup_chunk1, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message=FALSE, fig.width=16, fig.height = 9)
+options(knitr.table.format = "html") 
+
+# CHANGING VARIABLES - SET PER PROJECT
+company <- 'Company'
+project_name <- 'Project Name'
+objective <- "Sample question or objective short description"
+#If your project requires more granularity in your organization, use the question variable
+#question <- '1'
+
+# Set to true if using GCP
+#options(gcp=TRUE)
+```
+
+<!-- PLEASE DO NOT EDIT LINES 167-170 -->
+
+<div id="miniheader">
+  <div id="mh-company">`r company`: `r project_name`</div>
+  <div id="mh-objective">`r objective`</div>
+</div>
+
+<!-- PLEASE DO NOT EDIT LINES 167-170 -->
+
+```{r load_install_req_packages, eval=TRUE, include=FALSE}
+library(datatools)
+library(gtsummary)
+library(tidyverse)
+```
+
+
+```{r functions, width = 60}
+theme_tempus <- function(base_size = 12, ticks = TRUE, ylab=TRUE, xlab=TRUE,
+                         legend=TRUE, legend_title=TRUE, grid=FALSE) {
+  half_line <- base_size / 2
+  ret <- theme_ipsum_rc(base_size=base_size,
+                        grid=grid,
+                        plot_margin = margin(half_line, half_line, half_line, half_line),
+                        axis_text_size = rel(1),
+                        axis_title_size = rel(1.2),
+                        strip_text_size = rel(1.2),
+                        plot_title_size = rel(1.6),
+                        ticks=TRUE) +
+    theme(line = element_line(color = tempuscolor('#7B7B7E')[3]),
+          axis.ticks = element_line(color=tempuscolor('#7B7B7E')[6]),
+          axis.ticks.length = unit(4, "pt"),
+          legend.background = element_blank(),
+          legend.key = element_blank(),
+          panel.background = element_blank(),
+          panel.border = element_blank(),
+          strip.background = element_blank(),
+          plot.background = element_blank(),
+          axis.line = element_line(color = tempuscolor('#7B7B7E')[6]),
+          legend.text = element_text(size=rel(1.0)))
+  if (!ticks) {
+    ret <- ret + theme(axis.ticks = element_blank(),
+                       axis.ticks.x = element_blank(),
+                       axis.ticks.y = element_blank())
+  }
+  if (!ylab) {
+    ret <- ret + theme(axis.title.y = element_blank())
+  }
+  if (!xlab) {
+    ret <- ret + theme(axis.title.x = element_blank())
+  }
+  if (!legend_title) {
+    ret <- ret + theme(legend.title = element_blank())
+  }
+  if (!legend) {
+    ret <- ret + theme(legend.position = 'none')
+  }
+  ret
+}
+```
+  
+<br>  
+   
+# Introduction 
+
+# Analysis overview
+
+**Approach**   
+<!-- Update to include questions from SOW --> 
+  
+-  Patients will be grouped in quadrants based what the customer chooses.
+
+-  For each biomarker, scatterplots comparing genes of interest will be presented. 
+
+-  Each biomarker correlated with tumor purity, and the distribution of expression across biopsies sites will be analyzed.
+
+<br>     
+
+**Important Notes**
+<!-- Update to include any important notes from from SOW -->
+- All analyses performed in this study are generated using the most complete data set possible.
+  
+- Gene expression values in the subsequent analysis are normalized by transcripts-per-million (TPM) and are in units of log2 transformed (TPM +1). Each single unit increase in expression represents a doubling of gene expression.
+  
+- **Treatment naive** represents tumor biopsy samples that have not received any kind of treatment before collection. 
+  
+- **Pre-treatment** indicates tumor biopsy samples that were taken before the medication of interest but after another type of treatment. 
+  
+- **Post-treatment** indicates tumor biopsy samples that were taken after the medication of interest.
+
+<br>      
+**Results** 
+
+<!-- Update to include key headers/anchors for project -->  
+- [Cohort data availability](#cohort_availability)
+  
+- [Section about part of the Question](#q1)  
+
+- [Section about another part of the Question](#q2)  
+
+- [A few tips](#tips)
+
+<br>
+<br>
+
+
+## An example of a hyperlinked footnote
+  
+- The Tempus internal assay utilizes the immunohistochemistry (IHC) based methodology for the pd-l1 22c3 clone^[The 22c3 clone was validated using an external orthogonal reference laboratory utilizing the FDA-approved protocol and interpreted using the companion test approved interpretation guidelines. Interpretation of the staining was conducted according to the [Agilent](https://www.agilent.com/cs/library/usermanuals/public/29282_pd-l1_ihc_22c3_pharmdx_nsclc_interpretation_manual_%20kn042_fda.pdf) provided recommendations.] 
+
+<br> 
+<br>
+
+```{r set_env, echo=FALSE,include = FALSE}
+##
+## Load Libraries
+library(tidyverse)
+library(knitr)
+
+##
+## Knitr Options
+##
+opts_chunk$set(
+   include=TRUE,warning=FALSE, echo=FALSE, 
+   message=FALSE,concordance=TRUE,cache=FALSE
+)
+DT::datatable(matrix(), extensions="Buttons")
+```
+
+
+## Important Tables {.tabset .tabset-pills}
+These are the exciting results from the important tables.
+
+<style>
+.dataTables_wrapper {
+    max-width: 825px !important;
+}
+</style>
+
+```{r tables, results='asis'}
+
+##
+## Print Tables
+##
+mtcars <- rbind(mtcars, mtcars)
+colnames(mtcars) = toupper(colnames(mtcars))
+
+for(i in 1:5) {
+   cat(paste0('### Table ',i,' \n'))
+   cat(knitr::knit_print({
+      mtcars[i:(i+15), 1:6] %>%
+       DT::datatable(rownames=F, extensions="Buttons", caption = 'Table: This is the table caption.',
+                options = list(
+                  dom = "Blfrtip", 
+                  columnDefs = list(list(className = 'dt-center', targets = "_all")),
+                  lengthMenu = list(c(10,25,50,-1), 
+                                    c(10,25,50,"All")),
+                  buttons = c("copy", "csv"),
+                height = "auto",
+                class = 'cell-border stripe',
+                initComplete = DT::JS(
+                  "function(settings, json) {",
+                  "$(this.api().table().header()).css({'background-color': '#3E3E3F', 'color': '#fff'});",
+                 "}")
+                    ))
+   }))
+   cat('\n \n \n \n')
+}
+
+```
+
+
+
+#
+<div class = "spacer"> </div>  
+<br>
+<br>
+<br>
+
+  
+## Cohort data availability {#cohort_availability} 
+  
+Next comes the actual analysis and the organization and structure of that is highly dependent on the question itself and on the client's needs. I will provide a chunk example, but this will vary from project to project so we won't go into much detail.
+
+
+```{r analysis_chunk_1, echo=FALSE, eval=T}
+#Put your actual analysis here. Update the above chunk parameters as needed for your work.
+```
+<br>  
+<br> 
+
+## Section about part of the Question {#q1} 
+  
+More analysis. Use descriptive headers, remember how many comments to use for each level of header and remember to what level you include in your toc. 
+
+Example tabs:
+
+# {.tabset .tabset-pills}
+## Example 1
+This is example text that you see because you clicked on <p style="color:#F76719">**Example 1.**</p>
+
+## Example 2
+You clicked on <p style="color:#836CD0">**Example 2.**</p>
+
+## Example 3
+You are now selecting <p style="color:#AE1860">**Example 3.**</p>
+  
+Remember to add a `#` to end the tabset.
+
+#
+</br>
+
+
+
+```{r analysis_chunk_2, echo=FALSE, eval=T}
+#Put your actual analysis here. Update the above chunk parameters as needed for your work.
+```
+<br>  
+<br>   
+
+## Section about another part of the Question{#q2} 
+  
+More analysis below. Will all be highly dependent on your project. See the Confluence page linked to this to find tips and tricks on things like interactive tables, tabs/dropdowns, and for hints on html/css use.
+
+```{r analysis_chunk_3, echo=FALSE, eval=T}
+#Put your actual analysis here. Update the above chunk parameters as needed for your work.
+```
+<br>  
+<br>  
+
+## A few tips{#tips}
+1. Use `</br>` or `&nbsp;` to add empty lines to help with spacing!
+2. Use the recommended Tempus colors: https://component-library-docs.devtempus.com/#/style-foundation/color 
+3. Try to remain consistent with how you use headers and text
+4. If you ever run into formatting trouble (specifically if you are seeing comment lines show up in your output as opposed to actual headers), ensure that you have blank lines with 2 spaces before whatever trouble line you are seeing show up in your output. Note that 2 spaces after text signifies end of line.
+5. Remember to add a `#` to end the tabset that uses `##` for each tab.
+6. End your Rmd using this to prevent extra whitespace 
+
+```
+<br>
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
+```
+<br>
+<br>
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
